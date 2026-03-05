@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --ink-soft: #4a4a6a;
+      --ink-muted: #8888aa;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-hover: #1d4ed8;
+      --surface: #ffffff;
+      --surface-2: #f8f9ff;
+      --border: #e4e6f0;
+      --success: #059669;
+      --error: #dc2626;
+      --warning-bg: #fffbeb;
+      --warning: #92400e;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-lg: 0 16px 48px rgba(26,26,46,0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface-2);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER BANNER ── */
+    .header-banner {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #2563eb 100%);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .header-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .header-banner .placeholder-text {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    }
+
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 48px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      width: 100%;
+      max-width: 480px;
+      margin-top: -20px;
+      margin-bottom: 0;
+      z-index: 10;
+      position: relative;
+      background: var(--surface);
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 -4px 20px rgba(26,26,46,0.06);
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--accent);
+      width: 50%;
+      transition: width 0.5s ease;
+    }
+    .progress-steps {
+      display: flex;
+      padding: 14px 20px;
+      gap: 0;
+    }
+    .progress-step {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+    .progress-step.done { color: var(--success); }
+    .progress-step.active { color: var(--accent); font-weight: 600; }
+    .step-dot {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .progress-step.done .step-dot { background: var(--success); color: #fff; }
+    .progress-step.active .step-dot { background: var(--accent); color: #fff; }
+    .step-connector {
+      flex: 0 0 24px;
+      height: 1px;
+      background: var(--border);
+      align-self: center;
+    }
+
+    /* ── MAIN CARD ── */
+    .card {
+      background: var(--surface);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 480px;
+      animation: fadeIn 0.4s ease both;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── MEMBER BADGE ── */
+    .member-badge {
+      margin: 0 20px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #166534;
+    }
+    .member-badge svg { flex-shrink: 0; }
+
+    /* ── SECTION HEADINGS ── */
+    .section-head {
+      padding: 24px 20px 0;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 4px;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--ink);
+    }
+
+    .form-body { padding: 20px; }
+
+    /* ── FORM FIELDS ── */
+    .field-group {
+      margin-bottom: 16px;
+    }
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+    .field-label .required {
+      color: var(--error);
+      margin-left: 2px;
+    }
+    .field-input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    .field-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .field-input.prefilled {
+      background: var(--surface-2);
+      color: var(--ink-soft);
+    }
+    .field-input.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
+    }
+    .field-input[disabled] {
+      background: var(--surface-2);
+      color: var(--ink-muted);
+      cursor: not-allowed;
+    }
+    select.field-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238888aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    textarea.field-input {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* ── PAYMENT SECTION ── */
+    .payment-section {
+      margin: 8px 20px 0;
+      border-top: 1.5px solid var(--border);
+      padding-top: 20px;
+    }
+    .payment-header {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .payment-row:last-of-type { border-bottom: none; }
+    .payment-row .label { color: var(--ink-muted); }
+    .payment-row .value { font-weight: 600; color: var(--ink); }
+    .payment-row .value.amount {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--accent);
+    }
+    .early-tag {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── OTP SECTION ── */
+    .otp-section {
+      margin: 0 20px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .otp-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .otp-subtitle {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .otp-channel-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .channel-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .channel-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .otp-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .otp-input {
+      flex: 1;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 8px;
+      color: var(--ink);
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    .otp-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .otp-input.verified {
+      border-color: var(--success);
+      background: #f0fdf4;
+      color: var(--success);
+    }
+    .btn-send-otp {
+      padding: 13px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-send-otp:hover { background: var(--accent-hover); }
+    .btn-send-otp:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-verify-otp {
+      padding: 13px 16px;
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-verify-otp:hover { background: #2d2d4a; }
+    .btn-verify-otp:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .otp-status {
+      margin-top: 10px;
+      font-size: 12px;
+      min-height: 18px;
+    }
+    .otp-status.success { color: var(--success); display: flex; align-items: center; gap: 6px; }
+    .otp-status.error   { color: var(--error); }
+    .otp-status.info    { color: var(--accent); }
+
+    .resend-row {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--ink-muted);
+      text-align: center;
+    }
+    .resend-btn {
+      background: none; border: none;
+      color: var(--accent); font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; padding: 0;
+      text-decoration: underline;
+    }
+    .resend-btn:disabled { color: var(--ink-muted); text-decoration: none; cursor: not-allowed; }
+
+    /* ── SUBMIT BUTTON ── */
+    .submit-wrap {
+      padding: 20px;
+    }
+    .btn-pay {
+      width: 100%;
+      padding: 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      position: relative;
+    }
+    .btn-pay:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+    }
+    .btn-pay:disabled {
+      background: var(--border);
+      color: var(--ink-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn-pay .lock-icon { opacity: 0.7; }
+    .btn-pay .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-pay.loading .spinner { display: block; }
+    .btn-pay.loading .btn-pay-label { display: none; }
+    .btn-pay.loading .lock-icon { display: none; }
+
+    .pay-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0 20px 16px;
+      display: none;
+      align-items: flex-start;
+      gap: 8px;
+      animation: fadeIn 0.3s ease;
+    }
+    .alert.show { display: flex; }
+    .alert-error { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; }
+    .alert svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── FOOTER ── */
+    .footer-banner {
+      width: 100%;
+      max-width: 480px;
+      height: 70px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 16px;
+      background: linear-gradient(135deg, #1a1a2e, #2563eb);
+      position: relative;
+    }
+    .footer-banner img { width: 100%; height: 100%; object-fit: cover; }
+    .footer-banner .placeholder-text {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+    .back-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER BANNER -->
+<div class="header-banner">
+  <!-- <img src="your-event-banner.jpg" alt="Event Banner"> -->
+  <div class="placeholder-text">Replace with event header image</div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-steps">
+      <div class="progress-step done" id="step1Indicator">
+        <div class="step-dot">✓</div>
+        <span>Identity</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="progress-step active" id="step2Indicator">
+        <div class="step-dot">2</div>
+        <span>Details</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="progress-step" id="step3Indicator">
+        <div class="step-dot">3</div>
+        <span>Payment</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <!-- Member badge (shown for members only) -->
+    <div class="member-badge" id="memberBadge" style="display:none;padding-top:16px">
+      <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span><strong>Member verified</strong> — Your details have been prefilled from our records</span>
+    </div>
+
+    <!-- Personal Details -->
+    <div class="section-head">
+      <p class="section-label">Registration Details</p>
+      <h2 class="section-title">Your Information</h2>
+    </div>
+
+    <div class="form-body" id="dynamicFields">
+      <!-- Fields injected by JS -->
+    </div>
+
+    <div class="alert alert-error" id="formError">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="formErrorText">Please fill all required fields</span>
+    </div>
+
+    <!-- Payment Details -->
+    <div class="payment-section">
+      <h3 class="payment-header">Payment Details</h3>
+      <div class="payment-row">
+        <span class="label">Registration Type</span>
+        <span class="value" id="regTypeDisplay">—</span>
+      </div>
+      <div class="payment-row">
+        <span class="label">Pricing</span>
+        <span class="value"><span id="pricingTag" class="early-tag"></span></span>
+      </div>
+      <div class="payment-row">
+        <span class="label">Amount Payable</span>
+        <span class="value amount" id="amountDisplay">₹—</span>
+      </div>
+    </div>
+
+    <!-- OTP Section -->
+    <div class="otp-section" id="otpSection">
+      <p class="otp-title">Verify Your Identity</p>
+      <p class="otp-subtitle">Send an OTP to confirm your contact details before payment.</p>
+
+      <div class="otp-channel-row">
+        <button class="channel-btn active" id="emailChannel" onclick="selectChannel('email')">
+          📧 Email
+        </button>
+        <button class="channel-btn" id="smsChannel" onclick="selectChannel('sms')">
+          📱 Mobile
+        </button>
+      </div>
+
+      <div class="otp-input-row">
+        <input
+          class="otp-input"
+          type="text"
+          id="otpInput"
+          placeholder="------"
+          maxlength="6"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          oninput="this.value=this.value.replace(/\D/g,'')"
+        >
+        <button class="btn-send-otp" id="sendOtpBtn" onclick="sendOtp()">Send OTP</button>
+        <button class="btn-verify-otp" id="verifyOtpBtn" onclick="verifyOtp()" style="display:none">Verify</button>
+      </div>
+
+      <div class="otp-status" id="otpStatus"></div>
+
+      <div class="resend-row" id="resendRow" style="display:none">
+        Didn't receive it?
+        <button class="resend-btn" id="resendBtn" onclick="sendOtp(true)">Resend OTP</button>
+        <span id="resendTimer"></span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-wrap">
+      <button class="btn-pay" id="payBtn" disabled onclick="submitAndPay()">
+        <svg class="lock-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="btn-pay-label">Submit &amp; Pay Now</span>
+        <div class="spinner"></div>
+      </button>
+      <p class="pay-note">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Payments secured by Razorpay
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-banner">
+    <!-- <img src="your-footer-image.jpg" alt=""> -->
+    <div class="placeholder-text">Replace with footer image</div>
+  </div>
+
+  <div class="back-link">
+    <a href="step1-entry.html">← Go back</a>
+  </div>
+</div>
+
+<script>
+  // ★ REPLACE with your backend URL
+  const API = 'https://eventmanagement-xmyr.onrender.com'
+
+  // State
+  const EVENT_CODE  = sessionStorage.getItem('reg_event_code') || 'adecon2026'
+  const identifier  = sessionStorage.getItem('reg_identifier') || ''
+  const regMode     = sessionStorage.getItem('reg_mode') || 'email'
+  const isMember    = sessionStorage.getItem('reg_is_member') === 'true'
+  const memberData  = JSON.parse(sessionStorage.getItem('reg_member_data') || '{}')
+
+  let otpVerified   = false
+  let otpChannel    = 'email'
+  let amount        = 0
+  let formFields    = []
+  let resendCountdown = null
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  async function init() {
+    if (!identifier) {
+      window.location.href = 'step1-entry.html'
+      return
+    }
+
+    if (isMember) {
+      document.getElementById('memberBadge').style.display = 'flex'
+    }
+
+    try {
+      const resp = await fetch(
+        `${API}/form-config/${EVENT_CODE}?is_member=${isMember}`
+      )
+      const data = await resp.json()
+
+      formFields = data.fields || []
+      amount     = data.amount || 0
+
+      renderFields(formFields)
+      renderPaymentInfo(data)
+      setupOtpChannels()
+
+    } catch (e) {
+      document.getElementById('formErrorText').textContent =
+        'Could not load form. Please refresh.'
+      document.getElementById('formError').classList.add('show')
+    }
+  }
+
+  // ── RENDER FIELDS ─────────────────────────────────────────────────────────
+  function renderFields(fields) {
+    const container = document.getElementById('dynamicFields')
+    container.innerHTML = ''
+
+    fields.forEach(f => {
+      const group = document.createElement('div')
+      group.className = 'field-group'
+      group.id = `group_${f.field_key}`
+
+      const label = document.createElement('label')
+      label.className = 'field-label'
+      label.htmlFor   = `field_${f.field_key}`
+      label.innerHTML = f.field_label +
+        (f.is_required ? '<span class="required">*</span>' : '')
+
+      let input
+
+      // Special handling for state field - always create as select with Indian states
+      if (f.field_key === 'state') {
+        input = document.createElement('select')
+        input.className = 'field-input'
+        const defaultOpt = document.createElement('option')
+        defaultOpt.value = ''
+        defaultOpt.textContent = 'Select State'
+        input.appendChild(defaultOpt)
+
+        // Indian states
+        const indianStates = [
+          'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+          'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
+          'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
+          'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+          'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+          'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+          'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Puducherry',
+          'Chandigarh', 'Andaman and Nicobar Islands', 'Dadra and Nagar Haveli and Daman and Diu',
+          'Lakshadweep'
+        ]
+
+        indianStates.forEach(state => {
+          const o = document.createElement('option')
+          o.value = state
+          o.textContent = state
+          input.appendChild(o)
+        })
+      } else if (f.field_type === 'select' && f.field_options) {
+        input = document.createElement('select')
+        input.className = 'field-input'
+        const defaultOpt = document.createElement('option')
+        defaultOpt.value = ''; defaultOpt.textContent = `Select ${f.field_label}`
+        input.appendChild(defaultOpt)
+        f.field_options.split(',').forEach(opt => {
+          const o = document.createElement('option')
+          o.value = opt.trim(); o.textContent = opt.trim()
+          input.appendChild(o)
+        })
+      } else if (f.field_type === 'textarea') {
+        input = document.createElement('textarea')
+        input.className = 'field-input'
+        input.rows = 3
+      } else {
+        input = document.createElement('input')
+        input.className = 'field-input'
+        input.type = f.field_type || 'text'
+        if (f.field_type === 'tel') input.inputMode = 'numeric'
+        if (f.field_type === 'date') input.max = new Date().toISOString().split('T')[0]
+      }
+
+      input.id   = `field_${f.field_key}`
+      input.name = f.field_key
+      if (f.is_required) input.required = true
+
+      // Prefill from member data
+      if (isMember && f.is_prefilled && memberData[f.field_key]) {
+        input.value = memberData[f.field_key]
+        input.classList.add('prefilled')
+        if (f.field_key === 'membership_no') input.disabled = true
+      } else if (f.field_key === 'email' && regMode === 'email' && identifier) {
+        input.value = identifier
+        input.classList.add('prefilled')
+      } else if (f.field_key === 'mobile' && regMode === 'mobile' && identifier) {
+        input.value = identifier
+        input.classList.add('prefilled')
+      }
+
+      // Special handling for country field
+      if (f.field_key === 'country') {
+        input.value = 'India'
+        input.disabled = true
+        input.classList.add('prefilled')
+      }
+
+      group.appendChild(label)
+      group.appendChild(input)
+      container.appendChild(group)
+    })
+  }
+
+  // ── PAYMENT INFO ──────────────────────────────────────────────────────────
+  function renderPaymentInfo(data) {
+    document.getElementById('regTypeDisplay').textContent =
+      isMember ? 'Member' : 'Non-Member'
+    document.getElementById('amountDisplay').textContent =
+      '₹' + (amount || 0).toLocaleString('en-IN')
+
+    const tag = document.getElementById('pricingTag')
+    // Simple heuristic — backend already calculated correct price
+    tag.textContent = 'Confirmed'
+    tag.style.background = '#dbeafe'
+    tag.style.color = '#1e40af'
+  }
+
+  // ── OTP CHANNELS ─────────────────────────────────────────────────────────
+  function setupOtpChannels() {
+    // Hide SMS channel if no mobile available
+    if (regMode === 'email' && !memberData.mobile) {
+      document.getElementById('smsChannel').style.display = 'none'
+    }
+    // Hide email channel if no email available
+    if (regMode === 'mobile' && !memberData.email) {
+      document.getElementById('emailChannel').style.display = 'none'
+      selectChannel('sms')
+    }
+  }
+
+  function selectChannel(channel) {
+    otpChannel = channel
+    document.getElementById('emailChannel').classList.toggle('active', channel === 'email')
+    document.getElementById('smsChannel').classList.toggle('active', channel === 'sms')
+    document.getElementById('otpStatus').textContent = ''
+    document.getElementById('otpInput').value = ''
+    document.getElementById('otpInput').classList.remove('verified')
+    document.getElementById('sendOtpBtn').style.display = 'inline-block'
+    document.getElementById('verifyOtpBtn').style.display = 'none'
+    document.getElementById('resendRow').style.display = 'none'
+    otpVerified = false
+    updatePayBtn()
+  }
+
+  // ── SEND OTP ──────────────────────────────────────────────────────────────
+  async function sendOtp(isResend = false) {
+    const sendBtn = document.getElementById('sendOtpBtn')
+    const statusEl = document.getElementById('otpStatus')
+
+    // Determine identifier for chosen channel
+    let otpIdentifier = ''
+    if (otpChannel === 'email') {
+      otpIdentifier = memberData.email ||
+        (regMode === 'email' ? identifier : '')
+    } else {
+      otpIdentifier = memberData.mobile ||
+        (regMode === 'mobile' ? identifier : '')
+    }
+
+    if (!otpIdentifier) {
+      statusEl.className = 'otp-status error'
+      statusEl.textContent = `No ${otpChannel} found. Please choose another channel.`
+      return
+    }
+
+    sendBtn.disabled = true
+    statusEl.className = 'otp-status info'
+    statusEl.textContent = `Sending OTP to your ${otpChannel}…`
+
+    try {
+      const resp = await fetch(`${API}/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_code:  EVENT_CODE,
+          identifier:  otpIdentifier,
+          channel:     otpChannel
+        })
+      })
+      const data = await resp.json()
+
+      if (!resp.ok) {
+        statusEl.className = 'otp-status error'
+        statusEl.textContent = data.error || 'Failed to send OTP'
+        sendBtn.disabled = false
+        return
+      }
+
+      statusEl.className = 'otp-status info'
+      const dest = otpChannel === 'email'
+        ? maskEmail(otpIdentifier)
+        : maskMobile(otpIdentifier)
+      statusEl.textContent = `OTP sent to ${dest}. Valid for 5 minutes.`
+
+      document.getElementById('sendOtpBtn').style.display = 'none'
+      document.getElementById('verifyOtpBtn').style.display = 'inline-block'
+      document.getElementById('resendRow').style.display = 'block'
+      document.getElementById('otpInput').focus()
+
+      startResendTimer(60)
+
+    } catch (e) {
+      statusEl.className = 'otp-status error'
+      statusEl.textContent = 'Connection error. Please try again.'
+      sendBtn.disabled = false
+    }
+  }
+
+  // ── VERIFY OTP ────────────────────────────────────────────────────────────
+  async function verifyOtp() {
+    const code     = document.getElementById('otpInput').value.trim()
+    const statusEl = document.getElementById('otpStatus')
+    const verifyBtn= document.getElementById('verifyOtpBtn')
+
+    if (code.length !== 6) {
+      statusEl.className = 'otp-status error'
+      statusEl.textContent = 'Please enter the 6-digit OTP'
+      return
+    }
+
+    let otpIdentifier = ''
+    if (otpChannel === 'email') {
+      otpIdentifier = memberData.email || (regMode === 'email' ? identifier : '')
+    } else {
+      otpIdentifier = memberData.mobile || (regMode === 'mobile' ? identifier : '')
+    }
+
+    verifyBtn.disabled = true
+    statusEl.className = 'otp-status info'
+    statusEl.textContent = 'Verifying…'
+
+    try {
+      const resp = await fetch(`${API}/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_code:  EVENT_CODE,
+          identifier:  otpIdentifier,
+          channel:     otpChannel,
+          otp_code:    code
+        })
+      })
+      const data = await resp.json()
+
+      if (!resp.ok || !data.verified) {
+        statusEl.className = 'otp-status error'
+        statusEl.textContent = data.error || 'Incorrect OTP. Please try again.'
+        verifyBtn.disabled = false
+        return
+      }
+
+      otpVerified = true
+      document.getElementById('otpInput').classList.add('verified')
+      document.getElementById('otpInput').disabled = true
+      verifyBtn.style.display = 'none'
+      document.getElementById('resendRow').style.display = 'none'
+      statusEl.className = 'otp-status success'
+      statusEl.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg> Identity verified successfully'
+
+      updatePayBtn()
+
+    } catch (e) {
+      statusEl.className = 'otp-status error'
+      statusEl.textContent = 'Connection error. Please try again.'
+      verifyBtn.disabled = false
+    }
+  }
+
+  // ── PAY ───────────────────────────────────────────────────────────────────
+  async function submitAndPay() {
+    // Validate form
+    let valid = true
+    const formData = {}
+
+    formFields.forEach(f => {
+      const el = document.getElementById(`field_${f.field_key}`)
+      if (!el) return
+      const val = el.value.trim()
+      if (f.is_required && !val) {
+        el.classList.add('error')
+        valid = false
+      } else {
+        el.classList.remove('error')
+        formData[f.field_key] = val
+      }
+    })
+
+    if (!valid) {
+      document.getElementById('formErrorText').textContent =
+        'Please fill in all required fields'
+      document.getElementById('formError').classList.add('show')
+      document.querySelector('.form-body').scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+
+    document.getElementById('formError').classList.remove('show')
+
+    const payBtn = document.getElementById('payBtn')
+    payBtn.classList.add('loading')
+    payBtn.disabled = true
+
+    try {
+      const resp = await fetch(`${API}/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_code: EVENT_CODE,
+          email:      formData.email || (regMode === 'email' ? identifier : ''),
+          mobile:     formData.mobile || (regMode === 'mobile' ? identifier : ''),
+          is_member:  isMember,
+          form_data:  formData
+        })
+      })
+      const order = await resp.json()
+
+      if (!resp.ok) {
+        throw new Error(order.error || 'Failed to create order')
+      }
+
+      const options = {
+        key:         order.key,
+        amount:      order.amount * 100,
+        currency:    'INR',
+        order_id:    order.order_id,
+        name:        'youtube',
+        description: 'youtube',
+        prefill: {
+          name:    formData.name  || '',
+          email:   formData.email || (regMode === 'email' ? identifier : ''),
+          contact: formData.mobile || (regMode === 'mobile' ? identifier : '')
+        },
+        theme: { color: '#2563eb' },
+        handler: async function(payment) {
+          payBtn.classList.add('loading')
+          payBtn.disabled = true
+
+          const verifyResp = await fetch(`${API}/verify-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payment)
+          })
+          const result = await verifyResp.json()
+
+          if (result.status === 'success') {
+            sessionStorage.setItem('reg_success_id', result.registration_id)
+            sessionStorage.setItem('reg_success_name', formData.name || '')
+            window.location.href = 'success.html'
+          } else {
+            window.location.href = 'payment-failed.html'
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            payBtn.classList.remove('loading')
+            payBtn.disabled = false
+          }
+        }
+      }
+
+      const rzp = new Razorpay(options)
+      rzp.open()
+
+      // Update step indicator
+      document.getElementById('step3Indicator').classList.add('active')
+      document.getElementById('progressBar').style.width = '75%'
+
+    } catch (e) {
+      document.getElementById('formErrorText').textContent =
+        e.message || 'Something went wrong. Please try again.'
+      document.getElementById('formError').classList.add('show')
+      payBtn.classList.remove('loading')
+      payBtn.disabled = false
+    }
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function updatePayBtn() {
+    document.getElementById('payBtn').disabled = !otpVerified
+  }
+
+  function maskEmail(email) {
+    const [u, d] = email.split('@')
+    return u.slice(0, 2) + '***@' + d
+  }
+
+  function maskMobile(mobile) {
+    return mobile.slice(0, 2) + '****' + mobile.slice(-2)
+  }
+
+  function startResendTimer(seconds) {
+    const btn   = document.getElementById('resendBtn')
+    const timer = document.getElementById('resendTimer')
+    btn.disabled = true
+    let t = seconds
+    clearInterval(resendCountdown)
+    resendCountdown = setInterval(() => {
+      t--
+      timer.textContent = `(${t}s)`
+      if (t <= 0) {
+        clearInterval(resendCountdown)
+        btn.disabled = false
+        timer.textContent = ''
+      }
+    }, 1000)
+  }
+
+  // ── START ─────────────────────────────────────────────────────────────────
+  init()
+</script>
+</body>
+</html>

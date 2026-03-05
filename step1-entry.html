@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --ink-soft: #4a4a6a;
+      --ink-muted: #8888aa;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-hover: #1d4ed8;
+      --surface: #ffffff;
+      --surface-2: #f8f9ff;
+      --border: #e4e6f0;
+      --success: #059669;
+      --error: #dc2626;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(26,26,46,0.08);
+      --shadow-lg: 0 16px 48px rgba(26,26,46,0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface-2);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER BANNER ── */
+    .header-banner {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #2563eb 100%);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .header-banner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .header-banner .placeholder-text {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 13px; letter-spacing: 2px;
+      text-transform: uppercase;
+      gap: 8px;
+    }
+    .header-banner .placeholder-text svg {
+      opacity: 0.3;
+    }
+
+    /* ── MAIN CARD ── */
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 48px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 480px;
+      margin-top: -32px;
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-top {
+      padding: 32px 28px 0;
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+    }
+    .step-pill span {
+      width: 16px; height: 16px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    /* ── TOGGLE ── */
+    .toggle-wrap {
+      display: flex;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 20px;
+      gap: 4px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(26,26,46,0.1);
+    }
+
+    /* ── INPUT ── */
+    .input-group {
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .input-icon {
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-muted);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .form-input {
+      width: 100%;
+      padding: 15px 16px 15px 46px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+    .form-input:focus ~ .input-icon,
+    .input-group:focus-within .input-icon {
+      color: var(--accent);
+    }
+    .form-input.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 4px rgba(220,38,38,0.08);
+    }
+    .form-hint {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-top: 6px;
+      margin-left: 4px;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-primary.loading .spinner { display: block; }
+    .btn-primary.loading .btn-text { display: none; }
+
+    /* ── CARD BOTTOM ── */
+    .card-bottom {
+      padding: 24px 28px 32px;
+    }
+
+    /* ── ALERT MESSAGES ── */
+    .alert {
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 16px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .alert.show { display: flex; align-items: flex-start; gap: 10px; }
+    .alert-error { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; }
+    .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+    .alert-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .alert svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 28px;
+    }
+
+    /* ── ALREADY REGISTERED STATE ── */
+    .registered-state {
+      padding: 28px;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .registered-state.show { display: block; }
+    .check-circle {
+      width: 64px; height: 64px;
+      background: #f0fdf4;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .reg-id-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 12px 0 20px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 18px;
+      color: var(--ink);
+      letter-spacing: 1px;
+    }
+
+    /* ── FOOTER BANNER ── */
+    .footer-banner {
+      width: 100%;
+      max-width: 480px;
+      height: 80px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 16px;
+      background: linear-gradient(135deg, #1a1a2e, #2563eb);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .footer-banner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .footer-banner .placeholder-text {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── SECURITY NOTE ── */
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-top: 20px;
+    }
+
+    /* ── CLOSED STATE ── */
+    .closed-state {
+      padding: 40px 28px;
+      text-align: center;
+      display: none;
+    }
+    .closed-state.show { display: block; }
+    .closed-icon {
+      width: 64px; height: 64px;
+      background: #fef2f2;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER BANNER — replace src with your event banner image -->
+<div class="header-banner">
+  <!-- <img src="your-event-banner.jpg" alt="Event Banner"> -->
+  <div class="placeholder-text">
+    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+    </svg>
+    Replace with event header image
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="card">
+    <div class="card-top">
+      <div class="step-pill"><span>1</span> Step 1 of 2</div>
+      <h1 class="card-title">Let's get you registered</h1>
+      <p class="card-subtitle">Enter your email or mobile number to check your membership status and begin registration.</p>
+
+      <!-- Toggle Email / Mobile -->
+      <div class="toggle-wrap">
+        <button class="toggle-btn active" id="emailToggle" onclick="switchMode('email')">Email Address</button>
+        <button class="toggle-btn" id="mobileToggle" onclick="switchMode('mobile')">Mobile Number</button>
+      </div>
+
+      <!-- Input -->
+      <div class="input-group">
+        <svg class="input-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="inputIcon">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/>
+        </svg>
+        <input
+          class="form-input"
+          type="email"
+          id="mainInput"
+          placeholder="yourname@example.com"
+          autocomplete="email"
+          inputmode="email"
+        >
+      </div>
+      <p class="form-hint" id="inputHint">We'll check if you're a registered member</p>
+    </div>
+
+    <div class="card-bottom">
+      <!-- Alert messages -->
+      <div class="alert alert-error" id="errorAlert">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errorText">Something went wrong</span>
+      </div>
+
+      <!-- Submit button -->
+      <button class="btn-primary" id="submitBtn" onclick="checkUser()">
+        <span class="btn-text">Continue</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+
+    <!-- Already registered state -->
+    <div class="divider"></div>
+    <div class="registered-state" id="registeredState">
+      <div class="check-circle">
+        <svg width="28" height="28" fill="none" stroke="#059669" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+      </div>
+      <p style="font-size:13px;color:var(--ink-muted);margin-bottom:4px">You're already registered</p>
+      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px">Registration Confirmed</h3>
+      <p style="font-size:13px;color:var(--ink-muted);margin-bottom:12px">Your registration ID is</p>
+      <div class="reg-id-box" id="regIdDisplay">—</div>
+      <p style="font-size:13px;color:var(--ink-muted)">Check your email for the confirmation details.</p>
+    </div>
+
+    <!-- Closed state -->
+    <div class="closed-state" id="closedState">
+      <div class="closed-icon">
+        <svg width="28" height="28" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:8px">Registrations Closed</h3>
+      <p style="font-size:14px;color:var(--ink-muted);line-height:1.6">Registration for this event is currently closed. Please contact the organiser for more information.</p>
+    </div>
+  </div>
+
+  <!-- Footer banner -->
+  <div class="footer-banner">
+    <!-- <img src="your-footer-image.jpg" alt=""> -->
+    <div class="placeholder-text">Replace with footer image</div>
+  </div>
+
+  <div class="security-note">
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Secured &amp; encrypted
+  </div>
+</div>
+
+<script>
+  // ★ REPLACE with your backend URL and event code
+  const API        = 'https://eventmanagement-xmyr.onrender.com'
+  const EVENT_CODE = 'adecon2026'
+
+  let currentMode = 'email'
+
+  function switchMode(mode) {
+    currentMode = mode
+    const input    = document.getElementById('mainInput')
+    const icon     = document.getElementById('inputIcon')
+    const hint     = document.getElementById('inputHint')
+    const emailBtn = document.getElementById('emailToggle')
+    const mobileBtn= document.getElementById('mobileToggle')
+
+    hideAlert()
+
+    if (mode === 'email') {
+      emailBtn.classList.add('active')
+      mobileBtn.classList.remove('active')
+      input.type        = 'email'
+      input.placeholder = 'yourname@example.com'
+      input.inputMode   = 'email'
+      input.autocomplete= 'email'
+      hint.textContent  = "We'll check if you're a registered member"
+      icon.innerHTML    = '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/>'
+    } else {
+      mobileBtn.classList.add('active')
+      emailBtn.classList.remove('active')
+      input.type        = 'tel'
+      input.placeholder = '9800000000'
+      input.inputMode   = 'numeric'
+      input.autocomplete= 'tel'
+      hint.textContent  = '10-digit mobile number without country code'
+      icon.innerHTML    = '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.13 6.13l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>'
+    }
+    input.value = ''
+    input.focus()
+  }
+
+  function showAlert(type, message) {
+    hideAlert()
+    const el = document.getElementById('errorAlert')
+    el.className = `alert alert-${type} show`
+    document.getElementById('errorText').textContent = message
+  }
+
+  function hideAlert() {
+    document.getElementById('errorAlert').classList.remove('show')
+    document.getElementById('mainInput').classList.remove('error')
+  }
+
+  function setLoading(loading) {
+    const btn = document.getElementById('submitBtn')
+    btn.classList.toggle('loading', loading)
+    btn.disabled = loading
+  }
+
+  async function checkUser() {
+    hideAlert()
+    const value = document.getElementById('mainInput').value.trim()
+
+    if (!value) {
+      document.getElementById('mainInput').classList.add('error')
+      showAlert('error', currentMode === 'email'
+        ? 'Please enter your email address'
+        : 'Please enter your mobile number')
+      return
+    }
+
+    if (currentMode === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      document.getElementById('mainInput').classList.add('error')
+      showAlert('error', 'Please enter a valid email address')
+      return
+    }
+
+    if (currentMode === 'mobile' && !/^\d{10}$/.test(value)) {
+      document.getElementById('mainInput').classList.add('error')
+      showAlert('error', 'Please enter a valid 10-digit mobile number')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const body = { event_code: EVENT_CODE }
+      if (currentMode === 'email') body.email = value
+      else body.mobile = value
+
+      const resp = await fetch(`${API}/check-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      const data = await resp.json()
+
+      if (!resp.ok) {
+        showAlert('error', data.error || 'Something went wrong. Please try again.')
+        return
+      }
+
+      if (data.status === 'registration_closed') {
+        document.getElementById('closedState').classList.add('show')
+        document.querySelector('.card-top').style.display = 'none'
+        document.querySelector('.card-bottom').style.display = 'none'
+        document.querySelector('.divider').style.display = 'none'
+        return
+      }
+
+      if (data.status === 'already_registered') {
+        document.getElementById('registeredState').classList.add('show')
+        document.getElementById('regIdDisplay').textContent = data.registration_id || '—'
+        document.querySelector('.card-top').style.display = 'none'
+        document.querySelector('.card-bottom').style.display = 'none'
+        document.querySelector('.divider').style.display = 'none'
+        return
+      }
+
+      // Store for Step 2
+      sessionStorage.setItem('reg_identifier', value)
+      sessionStorage.setItem('reg_mode', currentMode)
+      sessionStorage.setItem('reg_is_member', data.status === 'member' ? 'true' : 'false')
+      sessionStorage.setItem('reg_member_data', JSON.stringify(data.member_data || {}))
+      sessionStorage.setItem('reg_event_code', EVENT_CODE)
+
+      // Go to Step 2
+      window.location.href = 'step2-form.html'
+
+    } catch (e) {
+      showAlert('error', 'Connection error. Please check your internet and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkUser()
+  })
+</script>
+</body>
+</html>
