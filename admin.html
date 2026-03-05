@@ -268,6 +268,27 @@
   let EVENT_CODE = null
   let ROLE = null
 
+  // attempt to restore token and event code from localStorage
+  function restoreSession() {
+    const storedToken = localStorage.getItem('adminToken')
+    const storedRole = localStorage.getItem('adminRole')
+    const storedEmail = localStorage.getItem('adminEmail')
+    const storedEvent = localStorage.getItem('eventCode')
+    if (storedToken && storedEvent) {
+      TOKEN = storedToken
+      ROLE = storedRole
+      EVENT_CODE = storedEvent
+      document.getElementById('adminEmail').textContent = storedEmail || ''
+      document.getElementById('loginPage').classList.add('hidden')
+      document.getElementById('dashboardPage').classList.remove('hidden')
+      if (ROLE !== 'manager') {
+        document.getElementById('statusBar').classList.add('hidden')
+      }
+      // try loading dashboard; if token expired we'll logout
+      loadDashboard().catch(_ => doLogout())
+    }
+  }
+
   // ── LOGIN ──────────────────────────────────────────────────────────
   async function doLogin() {
     const email = document.getElementById('loginEmail').value.trim()
@@ -280,7 +301,7 @@
 
     //Deployment Change
     const params = new URLSearchParams(window.location.search)
-EVENT_CODE = params.get('event') || parts[parts.length - 1]
+    EVENT_CODE = params.get('event') || parts[parts.length - 1]
 
     if (!EVENT_CODE || EVENT_CODE === 'admin') {
       errEl.textContent = 'No event code in URL. Navigate to /admin/[event_code]'
@@ -299,6 +320,12 @@ EVENT_CODE = params.get('event') || parts[parts.length - 1]
       TOKEN = data.token
       ROLE = data.role
 
+      // persist credentials so user stays logged in
+      localStorage.setItem('adminToken', TOKEN)
+      localStorage.setItem('adminRole', ROLE)
+      localStorage.setItem('adminEmail', email)
+      localStorage.setItem('eventCode', EVENT_CODE)
+
       document.getElementById('loginPage').classList.add('hidden')
       document.getElementById('dashboardPage').classList.remove('hidden')
       document.getElementById('adminEmail').textContent = email
@@ -314,7 +341,13 @@ EVENT_CODE = params.get('event') || parts[parts.length - 1]
   }
 
   function doLogout() {
-    TOKEN = null; EVENT_CODE = null
+    TOKEN = null; EVENT_CODE = null; ROLE = null
+    // clear storage
+    localStorage.removeItem('adminToken')
+    localStorage.removeItem('adminRole')
+    localStorage.removeItem('adminEmail')
+    localStorage.removeItem('eventCode')
+
     document.getElementById('loginPage').classList.remove('hidden')
     document.getElementById('dashboardPage').classList.add('hidden')
     document.getElementById('loginPassword').value = ''
@@ -474,6 +507,16 @@ EVENT_CODE = params.get('event') || parts[parts.length - 1]
       ? `✅ Test email sent to ${to_email}`
       : '❌ Failed to send test email'
   }
+
+  // when page loads try to restore previous session
+  document.addEventListener('DOMContentLoaded', () => {
+    // ensure EVENT_CODE from URL is available for auto-login path
+    const parts = window.location.pathname.split('/')
+    const params = new URLSearchParams(window.location.search)
+    EVENT_CODE = params.get('event') || parts[parts.length - 1]
+    if (EVENT_CODE === 'admin') { EVENT_CODE = null }
+    restoreSession()
+  })
 
   // Enter key triggers login
   document.addEventListener('keydown', e => {
